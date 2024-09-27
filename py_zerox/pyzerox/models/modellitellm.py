@@ -35,7 +35,7 @@ class litellmmodel(BaseModel):
 
         ## calling custom methods to validate the environment and model
         self.validate_environment()
-        self.validate_model()
+        # self.validate_model()
         self.validate_access()
 
     @property
