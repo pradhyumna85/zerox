@@ -12,7 +12,12 @@ coverage/
 .nyc_output/
 .grunt/
 bower_components/
+node-zerox/tests/results
+eng.traineddata
+.DS_Store
 
+# Ignore Tesseract's data
+osd.traineddata
 
 # ==========================
 #         Python

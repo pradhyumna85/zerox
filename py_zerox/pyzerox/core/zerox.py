@@ -7,6 +7,7 @@ from datetime import datetime
 import aiofiles
 import aiofiles.os as async_os
 import asyncio
+from ..constants import PDFConversionDefaultOptions
 
 # Package Imports
 from ..processor import (
@@ -27,6 +28,8 @@ async def zerox(
     cleanup: bool = True,
     concurrency: int = 10,
     file_path: Optional[str] = "",
+    image_density: int = PDFConversionDefaultOptions.DPI,
+    image_height: tuple[Optional[int], int] = PDFConversionDefaultOptions.SIZE,
     maintain_format: bool = False,
     model: str = "gpt-4o-mini",
     output_file_path: Optional[str] = None,
@@ -129,7 +132,9 @@ async def zerox(
         
         raw_file_name = os.path.splitext(os.path.basename(local_path))[0]
         file_name = "".join(c.lower() if c.isalnum() else "_" for c in raw_file_name)
-        
+        # Truncate file name to 255 characters to prevent ENAMETOOLONG errors
+        file_name = file_name[:255]
+
         # create a subset pdf in temp dir with only the requested pages if select_pages is provided
         if select_pages is not None:
             subset_pdf_create_kwargs = {"original_pdf_path":local_path, "select_pages":select_pages, 
@@ -138,7 +143,7 @@ async def zerox(
                                                  **subset_pdf_create_kwargs)
 
         # Convert the file to a series of images, below function returns a list of image paths in page order
-        images = await convert_pdf_to_images(local_path=local_path, temp_dir=temp_directory)
+        images = await convert_pdf_to_images(image_density=image_density, image_height=image_height, local_path=local_path, temp_dir=temp_directory)
 
         if maintain_format:
             for image in images:
